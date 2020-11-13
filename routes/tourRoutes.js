@@ -1,18 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const {
-  getAllTours,
-  postTours,
-  getTourById,
-  patchTourById,
-  deleteTourById,
-} = require('../controllers/tourController');
+const tourController = require('../controllers/tourController');
 
-router.route(`/`).get(getAllTours).post(postTours);
+// isValidID Middleware
+router.param('id', tourController.validateID);
+
+router
+  .route(`/`)
+  .get(tourController.getAllTours)
+  .post(tourController.validateBody, tourController.postTours);
+
 router
   .route(`/:id`)
-  .get(getTourById)
-  .patch(patchTourById)
-  .delete(deleteTourById);
+  .get(tourController.getTourById)
+  .patch(tourController.patchTourById)
+  .delete(tourController.deleteTourById);
 
 module.exports = router;

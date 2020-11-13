@@ -2,7 +2,29 @@ const fs = require('fs');
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
-
+exports.validateID = (req, res, next, id) => {
+  const tourId = id;
+  const tourById = tours.find((tour) => {
+    return tour.id == tourId;
+  });
+  if (!tourById) {
+    return res.status(404).json({
+      status: 'failed',
+      message: 'Not Tour found',
+    });
+  }
+  next();
+};
+exports.validateBody = (req, res, next) => {
+  // console.log(req);
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: 'failed',
+      message: 'Mala info, BRO!',
+    });
+  }
+  next();
+};
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
   res.status(200).json({
@@ -15,20 +37,12 @@ exports.getAllTours = (req, res) => {
   });
 };
 exports.getTourById = (req, res) => {
-  const tourId = req.params.id;
-  const tourById = tours.find((tour) => {
-    return tour.id == tourId;
-  });
-  if (!tourById) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Not Tour found',
-    });
-  }
   res.status(200).json({
     status: 'success',
     data: {
-      tour: tourById,
+      tour: tours.find((tour) => {
+        return tour.id == req.params.id;
+      }),
     },
   });
 };
@@ -52,34 +66,16 @@ exports.postTours = (req, res) => {
   );
 };
 exports.patchTourById = (req, res) => {
-  const tourId = req.params.id;
-  const tourById = tours.find((tour) => {
-    return tour.id == tourId;
-  });
-  if (!tourById) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Not Tour found',
-    });
-  }
   res.status(200).json({
     status: 'success',
     data: {
-      tour: tourById,
+      tour: tours.find((tour) => {
+        return tour.id == req.params.id;
+      }),
     },
   });
 };
 exports.deleteTourById = (req, res) => {
-  const tourId = req.params.id;
-  const tourById = tours.find((tour) => {
-    return tour.id == tourId;
-  });
-  if (!tourById) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Not Tour found',
-    });
-  }
   res.status(204).json({
     status: 'success',
     data: null,
